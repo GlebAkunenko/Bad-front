@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import './App.css'; // Импорт CSS файла
 
 function App() {
@@ -11,9 +12,8 @@ function App() {
   }, []);
 
   const fetchUsers = () => {
-    fetch('http://localhost:4444/users')
-      .then(response => response.json())
-      .then(data => setUsers(data))
+    axios.get('http://localhost:4444/users')
+      .then(resp => setUsers(resp.data))
       .catch(error => console.error('Error fetching users:', error));
   };
 
@@ -28,14 +28,8 @@ function App() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:4444/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-      if (response.ok) {
+      const response = await axios.post('http://localhost:4444/user', JSON.stringify(formData));
+      if (response.status === 200) {
         fetchUsers();
         setShowForm(false);
         setFormData({ username: '', email: '' });
